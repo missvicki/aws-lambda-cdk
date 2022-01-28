@@ -54,11 +54,11 @@ jobs:
     - name: Install requirements
       run: pip3 install -r requirements.txt
       
-    # - name: cdk synth
-    #   run: cdk synth
+    - name: cdk synth
+      run: cdk synth
       
-    # - name: cdk bootstrap
-    #   run: cdk bootstrap
+    - name: cdk bootstrap
+      run: cdk bootstrap
       
     - name: cdk deploy
       run: cdk deploy
