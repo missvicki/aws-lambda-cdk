@@ -63,7 +63,7 @@ def clean_data(df):
     
     LOG.info("change datatypes")
     # # change datatypes
-    movies_copy["id"] = movies_copy["id"].astype("int")
+    movies_copy["d"] = movies_copy["d"].astype("int")
     movies_copy["release_date"] = pd.to_datetime(movies_copy["release_date"])
     
     # drop duplicates
@@ -90,4 +90,3 @@ def clean_data(df):
     movies_copy.dropna(inplace=True)
     
     return movies_copy
-    
