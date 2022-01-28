@@ -30,11 +30,20 @@ def handler(event, context):
         
         LOG.info("write clean data to s3")
         
-        csv_buffer = StringIO()
-        movies_clean.to_csv(csv_buffer)
-        s3.Object(bucket, 'movies_clean.csv').put(Body=csv_buffer.getvalue())
+        with StringIO() as csv_buffer:
+            movies_clean.to_csv(csv_buffer, index=False)
         
-        return {'statusCode': 200, "body": {"message": "Success Cleaning Data"}}
+            response = s3.put_object(
+                Bucket=bucket, Key="movies_clean.csv", Body=csv_buffer.getvalue()
+            )
+        
+            status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+        
+            if status == 200:
+                return {'statusCode': 200, "body": {"message": "Success Cleaning Data"}}
+            else:
+                return {'statusCode': status, "body": {"message": "Error writing to s3"}}
+        
     except Exception as e:
         LOG.error("error while handling lambda event")
         return {'statusCode': 500, "body": {"message": "Failed", 'what': e}}
