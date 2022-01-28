@@ -1,6 +1,10 @@
 name: Cloud Continuous Integration with Github Actions
 
-on: [push]
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -42,10 +46,10 @@ jobs:
         aws-region: us-east-1
 
     - name: Install NPM
-      run: 'sudp apt update -y && sudo apt install npm -y'
+      run: sudo apt update -y && sudo apt install npm -y
 
     - name: Install aws cdk
-      run: 'sudo npm install -g aws-cdk'
+      run: sudo npm install -g aws-cdk
       
     - name: Install requirements
       run: pip3 install -r requirements.txt
