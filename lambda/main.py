@@ -4,16 +4,15 @@ import logging
 import os
 from io import StringIO
 
+LOG = logging.getLogger()
+LOG.setLevel(logging.INFO)
+logHandler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logHandler.setFormatter(formatter)
+LOG.addHandler(logHandler)
 
 def handler(event, context):
     try:
-        LOG = logging.getLogger()
-        LOG.setLevel(logging.INFO)
-        logHandler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        logHandler.setFormatter(formatter)
-        LOG.addHandler(logHandler)
-        
         s3 = boto3.client('s3', aws_access_key_id=os.environ.get('ACCESS_ID'),
          aws_secret_access_key=os.environ.get('ACCESS_KEY'))
         LOG.info("s3 created")
@@ -62,26 +61,32 @@ def clean_data(df):
         ]
     )
     
+    LOG.info("change datatypes")
     # # change datatypes
     movies_copy["id"] = movies_copy["id"].astype("int")
     movies_copy["release_date"] = pd.to_datetime(movies_copy["release_date"])
     
     # drop duplicates
+    LOG.info("drop duplicates")
     movies_copy = movies_copy.drop_duplicates()
     
     # select columns we want
+    LOG.info("select columns we want")
     movies_copy = movies_copy.drop(["tagline", "overview"], axis=1)
     
     # handle missing values
 
-    # drop rows where all columns have missing data
+    LOG.info("drop rows with missing values")
+    # select columns we want
     movies_copy = movies_copy.dropna(axis=0, how="all")
     
     # replace nan in revenue and runtime with mean
+    LOG.info("replace nan in revenue and runtime with mean")
     movies_copy.revenue.fillna(movies_copy.revenue.mean(), inplace=True)
     movies_copy.runtime.fillna(movies_copy.runtime.mean(), inplace=True)
     
     # drop all release date unknown
+    LOG.info("drop all release date unknown")
     movies_copy.dropna(inplace=True)
     
     return movies_copy
